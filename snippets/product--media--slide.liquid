@@ -1,0 +1,269 @@
+{%- liquid
+  assign products_view_ar_t = 'products.view_ar' | t
+
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_media = current_variant.featured_media | default: product.featured_media
+
+  if max_height == 'none'
+    assign max_height = false
+  else
+    assign max_height = 600
+  endif
+
+  unless media_size
+    assign media_size = ''
+  endunless
+
+  unless image_zoom_enabled
+    assign image_zoom_enabled = false
+  endunless
+-%}
+
+<div class="product--media-custom">
+    <div class="product--media-custom-left">
+    <div class="product--thumbnail-slide swiper">
+      <div class="swiper-wrapper">
+        {%- for product_media in current_product.media -%}
+          <div class="swiper-slide">
+    
+          {% case product_media.media_type %}
+            {% when "image" %}
+              {%
+                render 'image',
+                image: product_media,
+                max_height: max_height
+              %}
+    
+            {% when "video" %}
+              <div
+                class="product-video--root"
+                tabindex="0"
+                data-js-class="ProductVideo"
+                data-loop-enabled="{{ video_looping_enabled }}"
+                data-type="plyr"
+                {% if media_size != blank %}
+                  data-view="{{ media_size }}"
+                {% endif %}
+              >
+                <div
+                  class="product-video--container"
+                  style="padding-top: {{ 1 | divided_by: product_media.aspect_ratio | times: 100 }}%;"
+                >
+                  {{ product_media | video_tag: image_size: "1024x" }}
+                </div>
+              </div>
+    
+            {% when "external_video" %}
+              <div
+                class="product-video--root"
+                tabindex="0"
+                data-js-class="ProductVideo"
+                data-loop-enabled="{{ video_looping_enabled }}"
+                data-type="youtube"
+                data-video-id="{{ product_media.external_id }}"
+                {% if media_size != blank %}
+                  data-view="{{ media_size }}"
+                {% endif %}
+              >
+                <div
+                  class="product-video--container"
+                  style="padding-top: {{ 1 | divided_by: product_media.aspect_ratio | times: 100 }}%;"
+                >
+                  <div
+                    class="product-video"
+                    id="{{ media_size }}{% if media_size != blank %}-{% endif %}{{ product_media.id }}"
+                  >
+                  </div>
+                </div>
+              </div>
+    
+            {% when "model" %}
+              <div
+                class="product-model--root"
+                tabindex="0"
+                data-js-class="ProductModel"
+                style="padding-top:
+                  {{- 1 | divided_by: product_media.preview_image.aspect_ratio | times: 100 -}}%;"
+                {% if media_size != blank %}
+                  data-view="{{ media_size }}"
+                {% endif %}
+              >
+                {{
+                  product_media | model_viewer_tag: reveal: 'interaction',
+                  toggleable: true,
+                  image_size: "1024x"
+                }}
+              </div>
+    
+              <a
+                class="product-model--button"
+                role="button"
+                data-item="button"
+                aria-label="{{ products_view_ar_t }}"
+                tabindex="0"
+              >
+                <div
+                  data-shopify-xr
+                  data-shopify-model3d-id="{{ product_media.id }}"
+                  data-shopify-title="{{ product.title }}"
+                >
+                  {% render 'icons', icon: '3d-badge' %}
+                  {{ products_view_ar_t }}
+                </div>
+              </a>
+    
+            {% else %}
+              {{ product_media | media_tag }}
+    
+          {% endcase %}
+    
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+  <div class="product--media-custom-right">
+    {% if modal_enabled and featured_media.media_type == 'image' %}
+      <a class="modal--link" href="#" aria-label="{{ image_modal_t }}">
+    {% endif %}
+    <div class="product--media-slide swiper">    
+      <div class="swiper-wrapper">
+        {%- for product_media in current_product.media -%}
+          <div class="swiper-slide">
+    
+          {% case product_media.media_type %}
+            {% when "image" %}
+              {%
+                render 'image',
+                image: product_media,
+                max_height: max_height
+              %}
+    
+            {% when "video" %}
+              <div
+                class="product-video--root"
+                tabindex="0"
+                data-js-class="ProductVideo"
+                data-loop-enabled="{{ video_looping_enabled }}"
+                data-type="plyr"
+                {% if media_size != blank %}
+                  data-view="{{ media_size }}"
+                {% endif %}
+              >
+                <div
+                  class="product-video--container"
+                  style="padding-top: {{ 1 | divided_by: product_media.aspect_ratio | times: 100 }}%;"
+                >
+                  {{ product_media | video_tag: image_size: "1024x" }}
+                </div>
+              </div>
+    
+            {% when "external_video" %}
+              <div
+                class="product-video--root"
+                tabindex="0"
+                data-js-class="ProductVideo"
+                data-loop-enabled="{{ video_looping_enabled }}"
+                data-type="youtube"
+                data-video-id="{{ product_media.external_id }}"
+                {% if media_size != blank %}
+                  data-view="{{ media_size }}"
+                {% endif %}
+              >
+                <div
+                  class="product-video--container"
+                  style="padding-top: {{ 1 | divided_by: product_media.aspect_ratio | times: 100 }}%;"
+                >
+                  <div
+                    class="product-video"
+                    id="{{ media_size }}{% if media_size != blank %}-{% endif %}{{ product_media.id }}"
+                  >
+                  </div>
+                </div>
+              </div>
+    
+            {% when "model" %}
+              <div
+                class="product-model--root"
+                tabindex="0"
+                data-js-class="ProductModel"
+                style="padding-top:
+                  {{- 1 | divided_by: product_media.preview_image.aspect_ratio | times: 100 -}}%;"
+                {% if media_size != blank %}
+                  data-view="{{ media_size }}"
+                {% endif %}
+              >
+                {{
+                  product_media | model_viewer_tag: reveal: 'interaction',
+                  toggleable: true,
+                  image_size: "1024x"
+                }}
+              </div>
+    
+              <a
+                class="product-model--button"
+                role="button"
+                data-item="button"
+                aria-label="{{ products_view_ar_t }}"
+                tabindex="0"
+              >
+                <div
+                  data-shopify-xr
+                  data-shopify-model3d-id="{{ product_media.id }}"
+                  data-shopify-title="{{ product.title }}"
+                >
+                  {% render 'icons', icon: '3d-badge' %}
+                  {{ products_view_ar_t }}
+                </div>
+              </a>
+    
+            {% else %}
+              {{ product_media | media_tag }}
+    
+          {% endcase %}
+    
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+    {% if modal_enabled and featured_media.media_type == 'image' %}
+      </a>
+    {% endif %}
+    <div class="product--media-slider-next">
+      <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.54,11.29,9.88,5.64a1,1,0,0,0-1.42,0,1,1,0,0,0,0,1.41l4.95,5L8.46,17a1,1,0,0,0,0,1.41,1,1,0,0,0,.71.3,1,1,0,0,0,.71-.3l5.66-5.65A1,1,0,0,0,15.54,11.29Z"/>
+      </svg>
+    </div>
+    <div class="product--media-slider-prev">
+      <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24">
+        <path d="M8.5,12.8l5.7,5.6c0.4,0.4,1,0.4,1.4,0c0,0,0,0,0,0c0.4-0.4,0.4-1,0-1.4l-4.9-5l4.9-5c0.4-0.4,0.4-1,0-1.4c-0.2-0.2-0.4-0.3-0.7-0.3c-0.3,0-0.5,0.1-0.7,0.3l-5.7,5.6C8.1,11.7,8.1,12.3,8.5,12.8C8.5,12.7,8.5,12.7,8.5,12.8z"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+  const product__media_swiper = new Swiper(".product--media-slide", {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    centeredSlides: true,
+    loopedSlides: {{current_product.media.size}},
+    loop: true,
+    navigation: {
+      nextEl: '.product--media-slider-next',
+      prevEl: '.product--media-slider-prev',
+    },
+  });
+
+  const product__thumbmail_swiper = new Swiper(".product--thumbnail-slide", {
+    slidesPerView: "auto",
+    spaceBetween: 10,
+    centeredSlides: true,
+    loop: true,
+    slideToClickedSlide: true,
+    direction: "vertical",
+  });
+
+  product__media_swiper.controller.control = product__thumbmail_swiper;
+  product__thumbmail_swiper.controller.control = product__media_swiper;
+</script>
